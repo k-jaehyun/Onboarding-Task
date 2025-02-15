@@ -14,25 +14,36 @@ import org.springframework.context.annotation.Configuration;
     info = @Info(
         title = "Swagger API",
         version = "v1",
-        description = "swagger API 입니다"
+        description = "Swagger API 입니다"
     )
 )
 public class SwaggerConfig {
+
+  private static final String SECURITY_SCHEME_NAME = "Authorization";
+
+  /**
+   * OpenAPI Bean 설정
+   * - JWT 인증을 위한 Security Scheme 설정 포함
+   * - 기본 서버 URL 설정
+   */
   @Bean
   public OpenAPI openAPI() {
-    SecurityScheme apiKey = new SecurityScheme()
+    return new OpenAPI()
+        .components(new Components().addSecuritySchemes(SECURITY_SCHEME_NAME, createSecurityScheme()))
+        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
+        .addServersItem(new Server().url("/"));
+  }
+
+  /**
+   * JWT 인증을 위한 Security Scheme 생성
+   * @return SecurityScheme 설정 객체
+   */
+  private SecurityScheme createSecurityScheme() {
+    return new SecurityScheme()
         .type(SecurityScheme.Type.HTTP)
         .scheme("bearer")
         .bearerFormat("JWT")
         .in(SecurityScheme.In.HEADER)
-        .name("Authorization"); // ✅ 여기를 "Authorization"으로 통일
-
-    SecurityRequirement securityRequirement = new SecurityRequirement()
-        .addList("Authorization"); // ✅ 여기도 "Authorization"으로 변경
-
-    return new OpenAPI()
-        .components(new Components().addSecuritySchemes("Authorization", apiKey)) // ✅ 통일
-        .addSecurityItem(securityRequirement)
-        .addServersItem(new Server().url("/"));
+        .name(SECURITY_SCHEME_NAME);
   }
 }
