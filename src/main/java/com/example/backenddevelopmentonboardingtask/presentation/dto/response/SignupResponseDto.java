@@ -1,4 +1,4 @@
-package com.example.backenddevelopmentonboardingtask.presentation.response;
+package com.example.backenddevelopmentonboardingtask.presentation.dto.response;
 
 import com.example.backenddevelopmentonboardingtask.domain.User;
 import com.example.backenddevelopmentonboardingtask.domain.UserRoleEnum;

@@ -1,4 +1,4 @@
-package com.example.backenddevelopmentonboardingtask.presentation.response;
+package com.example.backenddevelopmentonboardingtask.presentation.dto.response;
 
 public record SignResponseDto(String token) {
 

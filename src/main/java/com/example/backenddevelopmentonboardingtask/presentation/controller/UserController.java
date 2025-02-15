@@ -1,10 +1,10 @@
 package com.example.backenddevelopmentonboardingtask.presentation.controller;
 
 import com.example.backenddevelopmentonboardingtask.application.UserService;
-import com.example.backenddevelopmentonboardingtask.presentation.request.SignRequestDto;
-import com.example.backenddevelopmentonboardingtask.presentation.request.SignupRequestDto;
-import com.example.backenddevelopmentonboardingtask.presentation.response.SignResponseDto;
-import com.example.backenddevelopmentonboardingtask.presentation.response.SignupResponseDto;
+import com.example.backenddevelopmentonboardingtask.presentation.dto.request.SignRequestDto;
+import com.example.backenddevelopmentonboardingtask.presentation.dto.request.SignupRequestDto;
+import com.example.backenddevelopmentonboardingtask.presentation.dto.response.SignResponseDto;
+import com.example.backenddevelopmentonboardingtask.presentation.dto.response.SignupResponseDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
