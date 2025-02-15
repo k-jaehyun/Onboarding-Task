@@ -1,8 +1,11 @@
 package com.example.backenddevelopmentonboardingtask.presentation.controller;
 
 import com.example.backenddevelopmentonboardingtask.application.UserService;
+import com.example.backenddevelopmentonboardingtask.presentation.request.SignRequestDto;
 import com.example.backenddevelopmentonboardingtask.presentation.request.SignupRequestDto;
+import com.example.backenddevelopmentonboardingtask.presentation.response.SignResponseDto;
 import com.example.backenddevelopmentonboardingtask.presentation.response.SignupResponseDto;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +24,16 @@ public class UserController {
   public ResponseEntity<SignupResponseDto> signup(@RequestBody SignupRequestDto signupRequestDto) {
     SignupResponseDto signupResponseDto = userService.signup(signupRequestDto);
     return ResponseEntity.ok(signupResponseDto);
+  }
+
+  @PostMapping("/sign")
+  public ResponseEntity<SignResponseDto> sign(
+      @RequestBody SignRequestDto request, HttpServletResponse response) {
+
+    SignResponseDto signResponseDto = userService.sign(
+        request.username(), request.password(), response);
+
+    return ResponseEntity.ok(signResponseDto);
   }
 
 }
