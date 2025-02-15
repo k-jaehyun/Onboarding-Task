@@ -29,7 +29,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       FilterChain filterChain) throws ServletException, IOException {
 
     String path = req.getRequestURI();
-    if (path.equals("/api/users/signup") || path.equals("/api/users/sign")) {
+    if (path.equals("/api/users/signup")
+        || path.equals("/api/users/sign")
+        || path.startsWith("/swagger")
+        || path.startsWith("/v3/api-docs")
+        || path.startsWith("/swagger-ui")
+    ) {
       filterChain.doFilter(req, res);
       return;
     }
