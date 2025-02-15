@@ -1,5 +1,8 @@
 package com.example.backenddevelopmentonboardingtask.infrastructure.config;
 
+import com.example.backenddevelopmentonboardingtask.infrastructure.JwtUtil;
+import com.example.backenddevelopmentonboardingtask.infrastructure.security.JwtAuthorizationFilter;
+import com.example.backenddevelopmentonboardingtask.infrastructure.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -18,9 +22,17 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
+  private final JwtUtil jwtUtil;
+  private final UserDetailsServiceImpl userDetailsService;
+
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public JwtAuthorizationFilter jwtAuthorizationFilter() {
+    return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
   }
 
   @Bean
@@ -40,6 +52,8 @@ public class SecurityConfig {
             .requestMatchers("/api/users/signup").permitAll()
             .anyRequest().authenticated()
     );
+
+    http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

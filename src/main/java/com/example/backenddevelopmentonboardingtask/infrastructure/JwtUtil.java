@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -64,8 +65,7 @@ public class JwtUtil {
   public String createRefreshToken(String username, String role) {
     Date date = new Date();
 
-    return BEARER_PREFIX +
-        Jwts.builder()
+    return Jwts.builder()
             .setSubject(username)
             .claim(AUTHORIZATION_KEY, role)
             .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
@@ -81,6 +81,7 @@ public class JwtUtil {
 
       Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token);
       cookie.setPath("/");
+      cookie.setMaxAge((int) REFRESH_TOKEN_TIME);
 
       res.addCookie(cookie);
     } catch (UnsupportedEncodingException e) {
@@ -117,22 +118,6 @@ public class JwtUtil {
     return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
   }
 
-  public String getTokenFromRequest(HttpServletRequest req) {
-    Cookie[] cookies = req.getCookies();
-    if (cookies != null) {
-      for (Cookie cookie : cookies) {
-        if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
-          try {
-            return URLDecoder.decode(cookie.getValue(), "UTF-8");
-          } catch (UnsupportedEncodingException e) {
-            return null;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
   public static void sendErrorResponse(HttpServletResponse res, String message, HttpStatus status)
       throws IOException {
     res.setStatus(status.value());
@@ -144,4 +129,36 @@ public class JwtUtil {
         status.value()
     ));
   }
+
+  public String extractToken(HttpServletRequest request) {
+    String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+    if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
+      return bearerToken.substring(BEARER_PREFIX.length()).trim();
+    }
+    return null;
+  }
+
+  public String getRefreshToken(HttpServletRequest req) {
+    Cookie[] cookies = req.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
+          return URLDecoder.decode(cookie.getValue(),
+              StandardCharsets.UTF_8);
+        }
+      }
+    }
+    return null;
+  }
+
+  public String regenerateAccessToken(String refreshToken) {
+    try {
+      Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody();
+      String username = claims.getSubject();
+      return createAccessToken(username);
+    } catch (Exception ex) {
+      throw new ApiException("토큰에서 유저 정보 조회 실패", HttpStatus.BAD_REQUEST);
+    }
+  }
+
 }
