@@ -2,7 +2,7 @@ package com.example.backenddevelopmentonboardingtask.application;
 
 import com.example.backenddevelopmentonboardingtask.domain.User;
 import com.example.backenddevelopmentonboardingtask.domain.UserRoleEnum;
-import com.example.backenddevelopmentonboardingtask.infrastructure.JwtUtil;
+import com.example.backenddevelopmentonboardingtask.infrastructure.utils.JwtUtil;
 import com.example.backenddevelopmentonboardingtask.infrastructure.repository.UserRepository;
 import com.example.backenddevelopmentonboardingtask.presentation.exception.ApiException;
 import com.example.backenddevelopmentonboardingtask.presentation.request.SignupRequestDto;

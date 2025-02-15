@@ -1,4 +1,4 @@
-package com.example.backenddevelopmentonboardingtask.infrastructure;
+package com.example.backenddevelopmentonboardingtask.infrastructure.utils;
 
 import com.example.backenddevelopmentonboardingtask.presentation.exception.ApiException;
 import io.jsonwebtoken.Claims;
@@ -101,33 +101,21 @@ public class JwtUtil {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
       return true;
     } catch (SecurityException | MalformedJwtException | SignatureException e) {
-      sendErrorResponse(response, "Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.",
+      ResponseUtil.sendErrorResponse(response, "Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.",
           HttpStatus.FORBIDDEN);
     } catch (ExpiredJwtException e) {
-      sendErrorResponse(response, "Expired JWT token, 만료된 JWT token 입니다.", HttpStatus.FORBIDDEN);
+      ResponseUtil.sendErrorResponse(response, "Expired JWT token, 만료된 JWT token 입니다.", HttpStatus.FORBIDDEN);
     } catch (UnsupportedJwtException e) {
-      sendErrorResponse(response, "Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.",
+      ResponseUtil.sendErrorResponse(response, "Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.",
           HttpStatus.FORBIDDEN);
     } catch (IllegalArgumentException e) {
-      sendErrorResponse(response, "JWT claims is empty, 잘못된 JWT 토큰 입니다.", HttpStatus.FORBIDDEN);
+      ResponseUtil.sendErrorResponse(response, "JWT claims is empty, 잘못된 JWT 토큰 입니다.", HttpStatus.FORBIDDEN);
     }
     return false;
   }
 
   public Claims getUserInfoFromToken(String token) {
     return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-  }
-
-  public static void sendErrorResponse(HttpServletResponse res, String message, HttpStatus status)
-      throws IOException {
-    res.setStatus(status.value());
-    res.setContentType("application/json");
-    res.setCharacterEncoding("UTF-8");
-    res.getWriter().write(String.format(
-        "{\"message\": \"%s\", \"status\": %d}",
-        message,
-        status.value()
-    ));
   }
 
   public String extractToken(HttpServletRequest request) {

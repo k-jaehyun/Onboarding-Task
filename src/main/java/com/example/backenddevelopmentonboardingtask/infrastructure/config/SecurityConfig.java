@@ -1,6 +1,6 @@
 package com.example.backenddevelopmentonboardingtask.infrastructure.config;
 
-import com.example.backenddevelopmentonboardingtask.infrastructure.JwtUtil;
+import com.example.backenddevelopmentonboardingtask.infrastructure.utils.JwtUtil;
 import com.example.backenddevelopmentonboardingtask.infrastructure.security.JwtAuthorizationFilter;
 import com.example.backenddevelopmentonboardingtask.infrastructure.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;

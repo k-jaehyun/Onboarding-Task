@@ -1,6 +1,7 @@
 package com.example.backenddevelopmentonboardingtask.infrastructure.security;
 
-import com.example.backenddevelopmentonboardingtask.infrastructure.JwtUtil;
+import com.example.backenddevelopmentonboardingtask.infrastructure.utils.JwtUtil;
+import com.example.backenddevelopmentonboardingtask.infrastructure.utils.ResponseUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,7 +51,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
       setAuthentication(info.getSubject());
     } else {
-      JwtUtil.sendErrorResponse(res, "Token is missing", HttpStatus.FORBIDDEN);
+      ResponseUtil.sendErrorResponse(res, "Token is missing", HttpStatus.FORBIDDEN);
       return;
     }
 
