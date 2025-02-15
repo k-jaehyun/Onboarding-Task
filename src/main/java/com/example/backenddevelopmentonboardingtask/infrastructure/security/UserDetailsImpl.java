@@ -1,7 +1,7 @@
 package com.example.backenddevelopmentonboardingtask.infrastructure.security;
 
+import com.example.backenddevelopmentonboardingtask.application.UserRoleUtils;
 import com.example.backenddevelopmentonboardingtask.domain.User;
-import com.example.backenddevelopmentonboardingtask.domain.UserRoleEnum;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.Getter;
@@ -31,16 +31,7 @@ public class UserDetailsImpl implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
 
-    boolean isAdmin = user.getAuthorities().stream()
-        .anyMatch(UserRoleEnum.ADMIN::equals);
-
-    String authority;
-
-    if (isAdmin) {
-      authority = UserRoleEnum.ADMIN.getAuthorityName();
-    } else {
-      authority = UserRoleEnum.USER.getAuthorityName();
-    }
+    String authority = UserRoleUtils.getHighestAuthority(user);
 
     SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
     Collection<GrantedAuthority> authorities = new ArrayList<>();
