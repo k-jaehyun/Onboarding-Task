@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user")
+@Table(name = "p_user")
 public class User {
 
   @Id
@@ -40,6 +41,12 @@ public class User {
   @ElementCollection(fetch = FetchType.LAZY)
   @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
   @Enumerated(EnumType.STRING)
-  private Set<UserRoleEnum> authorities;
+  private Set<UserRoleEnum> authorities = new HashSet<>();
 
+  public User(String username, String password, String nickname, UserRoleEnum roleEnum) {
+    this.username = username;
+    this.password = password;
+    this.nickname = nickname;
+    this.authorities.add(roleEnum);
+  }
 }
