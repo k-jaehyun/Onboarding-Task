@@ -66,12 +66,12 @@ public class JwtUtil {
     Date date = new Date();
 
     return Jwts.builder()
-            .setSubject(username)
-            .claim(AUTHORIZATION_KEY, role)
-            .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
-            .setIssuedAt(date)
-            .signWith(key, signatureAlgorithm)
-            .compact();
+        .setSubject(username)
+        .claim(AUTHORIZATION_KEY, role)
+        .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
+        .setIssuedAt(date)
+        .signWith(key, signatureAlgorithm)
+        .compact();
   }
 
   public void addJwtToCookie(String token, HttpServletResponse res) {
@@ -96,20 +96,33 @@ public class JwtUtil {
     throw new ApiException("Not Found Token", HttpStatus.BAD_REQUEST);
   }
 
-  public boolean validateToken(String token, HttpServletResponse response) throws IOException {
+  public boolean validateToken(String token, HttpServletResponse response, HttpServletRequest req)
+      throws IOException {
     try {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
       return true;
+    } catch (ExpiredJwtException e) {
+
+      String refreshToken = getRefreshToken(req);
+      if (refreshToken == null) {
+        ResponseUtil.sendErrorResponse(
+            response, "Expired JWT token, 만료된 JWT token 입니다.", HttpStatus.FORBIDDEN);
+      } else {
+        String newAccessToken = regenerateAccessToken(refreshToken);
+        ResponseUtil.sendErrorResponse(
+            response, "JWT Expired. New AccessToken Generated: " + newAccessToken,
+            HttpStatus.TEMPORARY_REDIRECT);
+      }
+
     } catch (SecurityException | MalformedJwtException | SignatureException e) {
       ResponseUtil.sendErrorResponse(response, "Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.",
           HttpStatus.FORBIDDEN);
-    } catch (ExpiredJwtException e) {
-      ResponseUtil.sendErrorResponse(response, "Expired JWT token, 만료된 JWT token 입니다.", HttpStatus.FORBIDDEN);
     } catch (UnsupportedJwtException e) {
       ResponseUtil.sendErrorResponse(response, "Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.",
           HttpStatus.FORBIDDEN);
     } catch (IllegalArgumentException e) {
-      ResponseUtil.sendErrorResponse(response, "JWT claims is empty, 잘못된 JWT 토큰 입니다.", HttpStatus.FORBIDDEN);
+      ResponseUtil.sendErrorResponse(response, "JWT claims is empty, 잘못된 JWT 토큰 입니다.",
+          HttpStatus.FORBIDDEN);
     }
     return false;
   }
@@ -141,7 +154,8 @@ public class JwtUtil {
 
   public String regenerateAccessToken(String refreshToken) {
     try {
-      Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody();
+      Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken)
+          .getBody();
       String username = claims.getSubject();
       return createAccessToken(username);
     } catch (Exception ex) {
