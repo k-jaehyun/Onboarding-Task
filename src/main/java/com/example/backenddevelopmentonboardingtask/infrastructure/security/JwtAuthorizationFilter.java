@@ -41,24 +41,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     String tokenValue = jwtUtil.extractToken(req);
 
-    if (StringUtils.hasText(tokenValue)) {
-      tokenValue = jwtUtil.substringToken(tokenValue);
-
-      if (!jwtUtil.validateToken(tokenValue, res)) {
-        String refreshToken = jwtUtil.getRefreshToken(req);
-        if (refreshToken == null) {
-          return;
-        } else {
-          tokenValue = jwtUtil.regenerateAccessToken(refreshToken);
-        }
-      }
-
-      Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
-      setAuthentication(info.getSubject());
-    } else {
+    if (!StringUtils.hasText(tokenValue)) {
       ResponseUtil.sendErrorResponse(res, "Token is missing", HttpStatus.FORBIDDEN);
       return;
     }
+
+    if (!jwtUtil.validateToken(tokenValue, res, req)) {
+      return;
+    }
+
+    Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
+    setAuthentication(info.getSubject());
 
     filterChain.doFilter(req, res);
   }
