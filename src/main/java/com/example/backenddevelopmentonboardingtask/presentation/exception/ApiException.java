@@ -8,8 +8,12 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public class ApiException extends RuntimeException {
 
-  private String msg;
-  private HttpStatus status;
+  private final HttpStatus status;
+
+  public ApiException(String message, HttpStatus status) {
+    super(message);
+    this.status = status;
+  }
 
 }
 

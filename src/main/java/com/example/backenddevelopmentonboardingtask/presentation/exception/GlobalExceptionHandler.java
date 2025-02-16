@@ -9,7 +9,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(ApiException.class)
   public ResponseEntity apiExceptionHandler(ApiException ex) {
-    return ResponseEntity.status(ex.getStatus()).body(ex.getMsg());
+    return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
   }
 
 }
