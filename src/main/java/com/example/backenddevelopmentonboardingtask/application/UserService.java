@@ -2,12 +2,12 @@ package com.example.backenddevelopmentonboardingtask.application;
 
 import com.example.backenddevelopmentonboardingtask.domain.User;
 import com.example.backenddevelopmentonboardingtask.domain.UserRoleEnum;
-import com.example.backenddevelopmentonboardingtask.infrastructure.utils.JwtUtil;
 import com.example.backenddevelopmentonboardingtask.infrastructure.repository.UserRepository;
-import com.example.backenddevelopmentonboardingtask.presentation.exception.ApiException;
+import com.example.backenddevelopmentonboardingtask.infrastructure.utils.JwtUtil;
 import com.example.backenddevelopmentonboardingtask.presentation.dto.request.SignupRequestDto;
 import com.example.backenddevelopmentonboardingtask.presentation.dto.response.SignResponseDto;
 import com.example.backenddevelopmentonboardingtask.presentation.dto.response.SignupResponseDto;
+import com.example.backenddevelopmentonboardingtask.presentation.exception.ApiException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -57,4 +57,14 @@ public class UserService {
     return SignResponseDto.from(accessToken);
   }
 
+  public String getNickname(Long id, User user) {
+    User findUser = userRepository.findById(id)
+        .orElseThrow(() -> new ApiException("존재하지 않는 ID입니다.", HttpStatus.BAD_REQUEST));
+
+    if (!findUser.getUsername().equals(user.getUsername())) {
+      throw new ApiException("본인의 닉네임만 조회 가능합니다.", HttpStatus.BAD_REQUEST);
+    }
+
+    return user.getNickname();
+  }
 }
