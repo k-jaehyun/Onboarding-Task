@@ -103,16 +103,7 @@ public class JwtUtil {
       return true;
     } catch (ExpiredJwtException e) {
 
-      String refreshToken = getRefreshToken(req);
-      if (refreshToken == null) {
-        ResponseUtil.sendErrorResponse(
-            response, "Expired JWT token, 만료된 JWT token 입니다.", HttpStatus.FORBIDDEN);
-      } else {
-        String newAccessToken = regenerateAccessToken(refreshToken);
-        ResponseUtil.sendErrorResponse(
-            response, "JWT Expired. New AccessToken Generated: " + newAccessToken,
-            HttpStatus.TEMPORARY_REDIRECT);
-      }
+      handleExpiredToken(response, req);
 
     } catch (SecurityException | MalformedJwtException | SignatureException e) {
       ResponseUtil.sendErrorResponse(response, "Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.",
@@ -160,6 +151,21 @@ public class JwtUtil {
       return createAccessToken(username);
     } catch (Exception ex) {
       throw new ApiException("토큰에서 유저 정보 조회 실패", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+
+
+  private void handleExpiredToken(HttpServletResponse response, HttpServletRequest req) throws IOException {
+    String refreshToken = getRefreshToken(req);
+    if (refreshToken == null) {
+      ResponseUtil.sendErrorResponse(
+          response, "Expired JWT token, 만료된 JWT token 입니다.", HttpStatus.FORBIDDEN);
+    } else {
+      String newAccessToken = regenerateAccessToken(refreshToken);
+      ResponseUtil.sendErrorResponse(
+          response, "JWT Expired. New AccessToken Generated: " + newAccessToken,
+          HttpStatus.TEMPORARY_REDIRECT);
     }
   }
 
