@@ -61,10 +61,12 @@ public class UserService {
     User findUser = userRepository.findById(id)
         .orElseThrow(() -> new ApiException("존재하지 않는 ID입니다.", HttpStatus.BAD_REQUEST));
 
-    if (!findUser.getUsername().equals(user.getUsername())) {
+    if (!UserRoleUtils.getHighestAuthority(user).equals(UserRoleEnum.ADMIN.getAuthorityName())
+        && !findUser.getUsername().equals(user.getUsername())
+    ) {
       throw new ApiException("본인의 닉네임만 조회 가능합니다.", HttpStatus.BAD_REQUEST);
     }
 
-    return user.getNickname();
+    return findUser.getNickname();
   }
 }
