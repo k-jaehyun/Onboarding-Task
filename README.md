@@ -47,7 +47,8 @@ http://ec2-3-84-165-7.compute-1.amazonaws.com:8080/swagger-ui/index.html
 ```
 
 # Nickname check API
-- path: http://ec2-3-84-165-7.compute-1.amazonaws.com:8080/api/users/1/nickname
+- path: http://ec2-3-84-165-7.compute-1.amazonaws.com:8080/api/users/{userId}/nickname
+  - `userId` Type: Long
 - request
   - header: Authorization = "Bearer token"
   - body: none
